@@ -25,6 +25,9 @@ var config = {
 var platforms;
 var player;
 var cursors;
+var stars;
+var score = 0;
+var scoreText;
 
 var game = new Phaser.Game(config);
 
@@ -42,6 +45,8 @@ function create(){
 
     // including the assets into the canvas
     this.add.image(400, 300, 'sky');
+
+    scoreText = this.add.text(16, 16, 'score: 0', {fontSize: '32px', fill: '#000'});
 
     // creating the ground and platforms in the create method
     platforms = this.physics.add.staticGroup();
@@ -77,6 +82,32 @@ function create(){
         frameRate: 10,
         repeat: -1
     });
+
+    // create the stars the player will collect
+    stars = this.physics.add.group({
+        key: 'star',
+        repeat: 11,
+        setXY: {x: 12, y: 0, stepX: 70}
+    });
+
+    stars.children.iterate(function(child){
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    });
+
+    // in this method, the player can collect the stars
+    function collectStar(player, star){
+        star.disableBody(true, true);
+        score += 10;
+        scoreText.setText('Placar: ' + score);
+
+        if(score == 120){
+            scoreText.setText('Você venceu!!! Placar: ' + score);
+        }
+    }
+
+    // making the star collide to the ground
+    this.physics.add.collider(stars, platforms);
+    this.physics.add.overlap(player, stars, collectStar, null, this);
 }
 
 function update(){
@@ -86,13 +117,13 @@ function update(){
 
     // left move
     if(cursors.left.isDown){
-        player.setVelocityX(-100);
+        player.setVelocityX(-160);
         player.anims.play('left', true);
     }
 
     // right move
     else if(cursors.right.isDown){
-        player.setVelocityX(100);
+        player.setVelocityX(160);
         player.anims.play('right', true);
     }
 
