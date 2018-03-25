@@ -24,6 +24,7 @@ var config = {
 // global variables
 var platforms;
 var player;
+var cursors;
 
 var game = new Phaser.Game(config);
 
@@ -80,4 +81,29 @@ function create(){
 
 function update(){
 
+    // creating the player commands
+    cursors = this.input.keyboard.createCursorKeys();
+
+    // left move
+    if(cursors.left.isDown){
+        player.setVelocityX(-100);
+        player.anims.play('left', true);
+    }
+
+    // right move
+    else if(cursors.right.isDown){
+        player.setVelocityX(100);
+        player.anims.play('right', true);
+    }
+
+    // if either left or right key is pressed, player is stopped
+    else{
+        player.setVelocityX(0);
+        player.anims.play('turn');
+    }
+
+    // jump move
+    if(cursors.up.isDown && player.body.touching.down){
+        player.setVelocityY(-330);
+    }
 }
